@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ghcr.io/johnesrom/app-public:pr-3-bdb9ab54e70fb54d864b91cefa75fb2928ddf227
+          image: ghcr.io/johnesrom/app-public:pr-3-25386d7ec451cadca126cf6fb8ba28406326518b
           imagePullPolicy: Always
           ports:
             - containerPort: 80
