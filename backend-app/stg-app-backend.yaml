@@ -8,10 +8,10 @@ spec:
   source:
     repoURL: https://github.com/johnesrom/app-manifests.git
     targetRevision: main
-    path: backend-app/
+    path: backend-app
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: backend-dev
   syncPolicy:
     automated:
       prune: true
