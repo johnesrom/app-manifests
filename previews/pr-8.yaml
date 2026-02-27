@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: preview-pr-8
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-pr-8
+  namespace: preview-pr-8
+  labels:
+    app: app-pr-8
+    pr: "8"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-pr-8
+  template:
+    metadata:
+      labels:
+        app: app-pr-8
+        pr: "8"
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/johnesrom/app-public:pr-8-ca7c7be3b42fe5e28277aeff0c03f47450a26c75
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-pr-8
+  namespace: preview-pr-8
+  labels:
+    app: app-pr-8
+spec:
+  selector:
+    app: app-pr-8
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-pr-8
+  namespace: preview-pr-8
+  labels:
+    app: app-pr-8
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pr-8.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-pr-8
+                port:
+                  number: 80
