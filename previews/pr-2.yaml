@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: preview-pr-2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-pr-2
+  namespace: preview-pr-2
+  labels:
+    app: app-pr-2
+    pr: "2"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-pr-2
+  template:
+    metadata:
+      labels:
+        app: app-pr-2
+        pr: "2"
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/johnesrom/app-public:pr-2-47c531512eb29fae1ae89e7583d04dbc3a4e6b69
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-pr-2
+  namespace: preview-pr-2
+  labels:
+    app: app-pr-2
+spec:
+  selector:
+    app: app-pr-2
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-pr-2
+  namespace: preview-pr-2
+  labels:
+    app: app-pr-2
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pr-2.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-pr-2
+                port:
+                  number: 80
