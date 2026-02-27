@@ -4,3 +4,4 @@ image:
   tag: "pr-1-254f3dcb9b2885a5f578d19cfb5af03b0487691f"
 ingress:
   host: "pr-1.localtest.me"
+  
