@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: preview-pr-5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-pr-5
+  namespace: preview-pr-5
+  labels:
+    app: app-pr-5
+    pr: "5"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-pr-5
+  template:
+    metadata:
+      labels:
+        app: app-pr-5
+        pr: "5"
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/johnesrom/app-public:pr-5-7b8238b75a6d05ea4f2c0fc3cf5566fe397136ac
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-pr-5
+  namespace: preview-pr-5
+  labels:
+    app: app-pr-5
+spec:
+  selector:
+    app: app-pr-5
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-pr-5
+  namespace: preview-pr-5
+  labels:
+    app: app-pr-5
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pr-5.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-pr-5
+                port:
+                  number: 80
