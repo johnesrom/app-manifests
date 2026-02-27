@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: preview-pr-4
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-pr-4
+  namespace: preview-pr-4
+  labels:
+    app: app-pr-4
+    pr: "4"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-pr-4
+  template:
+    metadata:
+      labels:
+        app: app-pr-4
+        pr: "4"
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/johnesrom/app-public:pr-4-5862c0f4a25dd6925f7bb9b0d215f7f29bc53353
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-pr-4
+  namespace: preview-pr-4
+  labels:
+    app: app-pr-4
+spec:
+  selector:
+    app: app-pr-4
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-pr-4
+  namespace: preview-pr-4
+  labels:
+    app: app-pr-4
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pr-4.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-pr-4
+                port:
+                  number: 80
